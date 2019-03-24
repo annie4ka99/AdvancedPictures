@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">AdvancedPictures</string>
+    <string name="title_picture_list">AdvancedPictures</string>
+    <string name="title_picture_detail">Picture Detail</string>
+    <string name="default_content_description">no description</string>
+    <string name="query_url"><![CDATA[https://api.flickr.com/services/feeds/photos_public.gne?tags=sleep&format=json]]></string>
+    <string name="query"></string>
+    <string name="query_hint">enter a key word</string>
+    <string name="search_icon">🔍</string>
+    <string name="FavAdd">Add to Favourites</string>
+    <string name="FavRemoved">Remove from Favourites</string>
+</resources>
