@@ -50,6 +50,8 @@ public class FavouritesDBHelper extends SQLiteOpenHelper {
 
     //check if the column exists
     private int getPictureInd(String description, String url) {
+        database.close();
+        database = FavouritesDBHelper.this.getWritableDatabase();
         Cursor cursor = getData();
         int ans = -1;
         while (cursor.moveToNext()) {
