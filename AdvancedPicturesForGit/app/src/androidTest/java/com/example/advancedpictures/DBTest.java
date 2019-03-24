@@ -10,8 +10,10 @@ import org.junit.runner.RunWith;
 
 import com.example.advancedpictures.FavouritesDBHelper;
 
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.observers.TestObserver;
 
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
@@ -22,13 +24,14 @@ public class DBTest {
 
     private FavouritesDBHelper helper;
     private CompositeDisposable compositeDisposable;
-    private Consumer<Boolean> asserterTrue, asserterFalse;
+
 
     @Before
     public void setUp() {
         getTargetContext().deleteDatabase(FavouritesDBHelper.getTableName());
         helper = FavouritesDBHelper.getInstance(getTargetContext());
         compositeDisposable = new CompositeDisposable();
+        /*
         asserterFalse = new Consumer<Boolean>() {
             @Override
             public void accept(Boolean f) throws Exception {
@@ -43,6 +46,7 @@ public class DBTest {
                 assertTrue(f);
             }
         };
+        */
 
     }
 
@@ -54,21 +58,39 @@ public class DBTest {
     }
 
     private void check(String description, String srcUrl, boolean result) throws InterruptedException {
-        if (result)
-            compositeDisposable.add(helper.check(description, srcUrl).subscribe(asserterTrue));
-        else compositeDisposable.add(helper.check(description, srcUrl).subscribe(asserterFalse));
+        TestObserver<Boolean> testObserver = new TestObserver<>();
+        compositeDisposable.add(helper.check(description, srcUrl).subscribeWith(testObserver));
+        if (result) {
+            testObserver.awaitTerminalEvent();
+            testObserver.assertValue(true);
+        } else {
+            testObserver.awaitTerminalEvent();
+            testObserver.assertValues(false);
+        }
     }
 
     private void add(String description, String srcUrl, boolean result) throws InterruptedException {
-        if (result)
-            compositeDisposable.add(helper.add(description, srcUrl).subscribe(asserterTrue));
-        else compositeDisposable.add(helper.add(description, srcUrl).subscribe(asserterFalse));
+        TestObserver<Boolean> testObserver = new TestObserver<>();
+        compositeDisposable.add(helper.add(description, srcUrl).subscribeWith(testObserver));
+        if (result) {
+            testObserver.awaitTerminalEvent();
+            testObserver.assertValue(true);
+        } else {
+            testObserver.awaitTerminalEvent();
+            testObserver.assertValues(false);
+        }
     }
 
     private void del(String description, String srcUrl, boolean result) throws InterruptedException {
-        if (result)
-            compositeDisposable.add(helper.delete(description, srcUrl).subscribe(asserterTrue));
-        else compositeDisposable.add(helper.delete(description, srcUrl).subscribe(asserterFalse));
+        TestObserver<Boolean> testObserver = new TestObserver<>();
+        compositeDisposable.add(helper.delete(description, srcUrl).subscribeWith(testObserver));
+        if (result) {
+            testObserver.awaitTerminalEvent();
+            testObserver.assertValue(true);
+        } else {
+            testObserver.awaitTerminalEvent();
+            testObserver.assertValues(false);
+        }
     }
 
     public void simpleTest(String description, String url) throws InterruptedException {
@@ -84,7 +106,7 @@ public class DBTest {
 
     @Test
     public void checkDB() throws InterruptedException {
-        simpleTest("TEST", "SOMEURL");
+        simpleTest("TEST", "SOME");
     }
 
 }
