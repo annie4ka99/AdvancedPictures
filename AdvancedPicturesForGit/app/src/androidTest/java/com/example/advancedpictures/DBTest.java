@@ -93,6 +93,9 @@ public class DBTest {
         }
     }
 
+
+
+
     public void simpleTest(String description, String url) throws InterruptedException {
         check(url, description, false);
         add(description, url, true);
@@ -100,13 +103,34 @@ public class DBTest {
         add(description, url, false);
         del(description, url, true);
         del(description, url, false);
-
     }
+    public void simpleTest2(String description, String url) throws InterruptedException {
+        add(description, url, true);
+        check(description,url,true);
+        add(description, url, false);
 
+        add(url, description, true);
+        add(url, description, false);
+        check(url, description, true);
 
+        del(url, description, true);
+        check(url, description, false);
+        del(url, description, false);
+
+        del(description, url, true);
+        check(description, url, false);
+        del(description, url, false);
+    }
     @Test
     public void checkDB() throws InterruptedException {
         simpleTest("TEST", "SOME");
+        simpleTest("TEST2", "SOME2");
+
+    }
+    @Test
+    public void checkDB2() throws InterruptedException {
+        simpleTest2("TEST3", "SOME3");
+        simpleTest2("TEST4", "SOME4");
     }
 
 }
