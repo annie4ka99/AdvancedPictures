@@ -97,6 +97,7 @@ public class PictureDetailFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        compositeDisposable.clear();
         super.onDestroy();
     }
 
