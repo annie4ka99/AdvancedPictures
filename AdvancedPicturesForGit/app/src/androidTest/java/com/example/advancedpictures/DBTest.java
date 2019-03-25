@@ -1,19 +1,14 @@
 package com.example.advancedpictures;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.example.advancedpictures.FavouritesDBHelper;
-
-import io.reactivex.Observable;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
@@ -21,79 +16,69 @@ import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 public class DBTest {
-
     private FavouritesDBHelper helper;
-    private CompositeDisposable compositeDisposable;
-
+    private Observer<Boolean> observerTrue, observerFalse;
 
     @Before
     public void setUp() {
         getTargetContext().deleteDatabase(FavouritesDBHelper.getTableName());
         helper = FavouritesDBHelper.getInstance(getTargetContext());
-        compositeDisposable = new CompositeDisposable();
-        /*
-        asserterFalse = new Consumer<Boolean>() {
+
+        observerTrue = new Observer<Boolean>() {
             @Override
-            public void accept(Boolean f) throws Exception {
-                //if (f)
-                //    Log.d("BOOLEAN ACCEPTED", "TRUE");
-                assertFalse(f);
+            public void onSubscribe(Disposable d) {
+            }
+            @Override
+            public void onNext(Boolean o) {
+                assertTrue(o);
+            }
+            @Override
+            public void onError(Throwable e) {
+            }
+            @Override
+            public void onComplete() {
             }
         };
-        asserterTrue = new Consumer<Boolean>() {
+
+        observerFalse = new Observer<Boolean>() {
             @Override
-            public void accept(Boolean f) throws Exception {
-                assertTrue(f);
+            public void onSubscribe(Disposable d) {
+            }
+            @Override
+            public void onNext(Boolean o) {
+                assertFalse(o);
+            }
+            @Override
+            public void onError(Throwable e) {
+            }
+            @Override
+            public void onComplete() {
             }
         };
-        */
+
 
     }
 
     @After
     public void finish() {
-        compositeDisposable.clear();
-        Log.d("TEST", " FINISHED SUCCESSFULLY");
+        //Log.d("TEST", " FINISHED SUCCESSFULLY");
         helper.close();
     }
 
-    private void check(String description, String srcUrl, boolean result) throws InterruptedException {
-        TestObserver<Boolean> testObserver = new TestObserver<>();
-        compositeDisposable.add(helper.check(description, srcUrl).subscribeWith(testObserver));
-        if (result) {
-            testObserver.awaitTerminalEvent();
-            testObserver.assertValue(true);
-        } else {
-            testObserver.awaitTerminalEvent();
-            testObserver.assertValues(false);
-        }
+    private void check(String description, String url, boolean result) throws InterruptedException {
+        if (result) helper.check(description, url).blockingSubscribe(observerTrue);
+        else helper.check(description, url).blockingSubscribe(observerFalse);
     }
 
-    private void add(String description, String srcUrl, boolean result) throws InterruptedException {
-        TestObserver<Boolean> testObserver = new TestObserver<>();
-        compositeDisposable.add(helper.add(description, srcUrl).subscribeWith(testObserver));
-        if (result) {
-            testObserver.awaitTerminalEvent();
-            testObserver.assertValue(true);
-        } else {
-            testObserver.awaitTerminalEvent();
-            testObserver.assertValues(false);
-        }
+    private void add(String description, String url, boolean result) throws InterruptedException {
+        if (result) helper.add(description, url).blockingSubscribe(observerTrue);
+        else helper.add(description, url).blockingSubscribe(observerFalse);
     }
 
-    private void del(String description, String srcUrl, boolean result) throws InterruptedException {
-        TestObserver<Boolean> testObserver = new TestObserver<>();
-        compositeDisposable.add(helper.delete(description, srcUrl).subscribeWith(testObserver));
-        if (result) {
-            testObserver.awaitTerminalEvent();
-            testObserver.assertValue(true);
-        } else {
-            testObserver.awaitTerminalEvent();
-            testObserver.assertValues(false);
-        }
+    private void del(String description, String url, boolean result) throws InterruptedException {
+        if (result) helper.delete(description, url).blockingSubscribe(observerTrue);
+        else helper.delete(description, url).blockingSubscribe(observerFalse);
     }
-
-
 
 
     public void simpleTest(String description, String url) throws InterruptedException {
